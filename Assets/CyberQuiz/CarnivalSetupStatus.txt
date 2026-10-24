@@ -1,0 +1,1 @@
+Editable Carnival scene baked and saved. All Canvas objects, five questions, thirty NFC option buttons, effects and leaderboard rows exist in the scene. No runtime UI spawning.

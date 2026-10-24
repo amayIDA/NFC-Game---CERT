@@ -1,0 +1,96 @@
+CYBER CARNIVAL — EDITING GUIDE
+
+Open Assets/CyberQuiz/CyberCarnivalQuiz.unity.
+Use Cyber Quiz > Open Editable Carnival Scene if another scene is open.
+
+All screens and controls exist in the scene before Play. Display 1 is the bottom touchscreen (Camera 1); Display 2 is the top quiz (Camera 2). Each canvas uses Screen Space - Camera and an exclusive layer.
+The original CyberSecurityQuiz scene is preserved separately.
+
+EDIT QUESTIONS AND OPTIONS
+1. Stop Play mode before changing content.
+2. Expand the Canvas. Enable one Question panel at a time to preview/edit.
+3. Edit the Text component of the question and each option's child text.
+4. Questions are drawn at runtime from ClassificationBank (40 DGE items). Each
+   round shows 10 random questions with a 3+3+2+2 category mix, then shuffled.
+5. NFC cubes stay A, B, C, D. OPEN, SECRET, CONFIDENTIAL and SENSITIVE shuffle
+   across those four letters each question. Edit Carnival Option > Nfc Value if
+   a cube ID changes. Correct answers come from the bank.
+6. Idle state: show the Display 1 Splash and the Display 2 Leaderboard. Runtime resets both automatically.
+
+DEFAULT NFC MAPPING — reused on every question
+A / index 0 / 2435786112
+B / index 1 / 2435817104
+C / index 2 / 2435882544
+D / index 3 / 2435920016
+The four classification words shuffle across A–D each question.
+After a Windows build, edit nfc-tags.json next to the .exe (a copy is also in
+StreamingAssets). Change the A-D numbers, save, and restart the player. The
+game still scores whichever letter currently shows the correct classification.
+
+INPUT
+Keyboard-emulating USB readers send decimal digits to the focused Unity Game
+view or standalone player. Enter terminates a scan; a 0.35-second idle interval
+also terminates readers without Enter. Unknown tags do not score. Once an answer
+is accepted, further scans are ignored until the next question. Mouse clicks
+remain available. Serial/PCSC readers need their own adapter calling SubmitTag
+on Unity's main thread. Physical reader taps have not been independently verified.
+
+LEADERBOARD
+Name and Email ID are required on Display 1. A virtual keyboard on the
+registration screen types into the selected field. Email stays in session
+memory; leaderboard scores store the player name, score, and answer time.
+Each completed game also appends Name, Email, Correct, Time and UTC timestamp
+to quiz-results.csv next to the Windows .exe (and next to the project in Editor).
+Completed games save locally at Application.persistentDataPath/
+cyber-carnival-leaderboard.json. Highest correct count ranks first; shortest
+answer time breaks ties. Timer runs only while a question accepts answers,
+excluding instructions, feedback, and transitions. Top 5 are displayed; top 50
+are retained. Scores survive app restarts. No network service is required.
+
+MOTION
+Carnival Quiz > Reduced Motion disables movement and celebration effects.
+Feedback Seconds controls time before the next question.
+Carnival Ambient controls gentle splash movement. All confetti pieces are
+prebuilt Canvas Images, reused without Instantiate or runtime UI construction.
+Standard Unity InputField internally manages its text caret.
+
+REFERENCE
+Artwork extracted from the supplied Figma frame and matching exported source
+PNGs in Downloads. Background, department logo, neon panel, HUD, and Carnival
+art are separate assets in Art. Live questions, options, names, timers, correct
+counts, results and leaderboard cells are editable Unity UI Text components.
+The four DGE classification cubes stay mapped to the same NFC IDs on every question.
+The bottom idle caption opens registration without changing Display 2. Submission shows thank-you on Display 1 and instructions on Display 2, then the touchscreen follows the quiz. Start/replay controls work on either display;
+the smaller registration screen is now authored separately on Display 1.
+
+VERIFICATION
+Cyber Quiz > Run Carnival Verification runs an isolated editor play-mode check.
+It verifies keyboard scan events, unknown/repeated tags, right/wrong scoring,
+JSON save/reload, ranking, replay and stable authored UI hierarchy. Test scores
+are written to a temporary cache file, not the real leaderboard.
+
+
+TWO-DISPLAY FLOW
+Display 1 idle caption -> Name / Email ID -> Submit -> Thank you -> Instructions.
+Display 2 stays on its live leaderboard while the registration form opens.
+After registration, both displays follow instructions, questions, feedback and results.
+Replay clears registration and returns to the independent two-display idle state.
+Display 2 is activated at runtime when a second monitor is connected.
+In Unity, open two Game tabs and select Display 1 and Display 2. In a player build, Windows display ordering determines which physical screen receives each output.
+The project draws 10 random questions from the 40-item classification bank and keeps four NFC cube mappings.
+Original field/button exports and Inter typography are in Assets/CyberQuiz/Art.
+Physical reader taps and the final installation's monitor routing require an on-site hardware check.
+
+FIGMA BUTTONS AND GAME MOTION
+Action controls use Art/Group 8.png at its original aspect ratio, with white artwork, no generated rectangle or extra outline, and live editable labels. Choice surfaces are transparent text hit areas, following the Figma question layout; the existing six choices and NFC IDs are preserved.
+CarnivalButtonMotion adds hover lift, press compression, and release spring.
+CarnivalOption reveals choices in staggered order. CarnivalQuiz pauses answer input and timing until the transition completes.
+CarnivalMotion owns prebuilt effects on both canvases: NFC lock rings, correct-answer burst, streak rewards, a restrained incorrect-answer nudge, score emphasis and result count-up. It creates no UI objects during play.
+CarnivalDisplays mirrors source transform and opacity animation so both outputs remain synchronized.
+Reduced Motion disables the added movement and decorative effects. Feedback Seconds controls reading time after the feedback entrance.
+Cyber Quiz > Apply Figma Buttons and Game Motion repairs the authored option and mirror references if needed.
+
+AUTOMATIC COMPLETION AND IDLE
+After the final answer feedback, the score is saved and the leaderboard opens automatically. The completed-game leaderboard remains for 10 seconds after its entrance finishes. Both displays then return to their idle states: the bottom touchscreen shows the registration attract screen, and the top display shows the leaderboard with the registration prompt. Player registration and the pending timer are cleared.
+Carnival Quiz > Leaderboard Seconds controls the completed-game hold (default 10). Initial idle does not start a countdown. Manual replay or starting a new game cancels any prior countdown.
+Carnival Ambient adds a smoothly floating foreground title/artwork, opposing slow tunnel drift, and three traveling border lights. The registration caption remains still and clickable. Reduced Motion restores the original static positions and hides the lights.

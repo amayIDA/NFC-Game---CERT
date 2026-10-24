@@ -1,0 +1,1 @@
+Quiz scene created successfully. Open Assets/CyberQuiz/CyberSecurityQuiz.unity and press Play. Keyboard NFC reader input uses the Unity Input System.
